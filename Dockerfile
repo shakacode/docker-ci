@@ -26,6 +26,8 @@ RUN npm install
 ENV PATH /linting/node_modules/.bin:$PATH
 
 # Start xvfd server at container runtime
-ENTRYPOINT service xvfd start \
-    && export DISPLAY=:99 \
-    && bash
+ENV DISPLAY :99
+# Need to have a rake :ci task in your rakefile
+ENTRYPOINT /etc/init.d/xvfd start \
+    && rake ci
+
