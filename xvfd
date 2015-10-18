@@ -1,8 +1,7 @@
 #! /bin/sh
 
 XVFB=/usr/bin/Xvfb
-# XVFBARGS=":99 -fbdir /var/run -ac"
-XVFBARGS=":99 -nolisten tcp -fbdir /var/run"
+XVFBARGS=":99 -fbdir /var/run -ac"
 PIDFILE=/var/run/xvfb.pid
 case "$1" in
   start)

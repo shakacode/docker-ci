@@ -11,11 +11,8 @@ RUN mkdir -p /linting
 WORKDIR /linting/
 
 # Install xvfd and iceweasel/firefox for browser testing
-RUN apt-get install -y xserver-common libgl1-mesa-glx libxfont1 libxshmfence1
-RUN curl -O http://http.us.debian.org/debian/pool/main/x/xorg-server/xvfb_1.16.4-1_amd64.deb \
-    && dpkg -i xvfb_1.16.4-1_amd64.deb \
-    && rm xvfb_1.16.4-1_amd64.deb
-RUN apt-get install -y iceweasel
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get install -y xvfb iceweasel
 
 COPY ["xvfd", "/etc/init.d/"]
 COPY ["xvfd.conf", "/etc/init/"]
@@ -29,4 +26,6 @@ RUN npm install
 ENV PATH /linting/node_modules/.bin:$PATH
 
 # Start xvfd server at container runtime
-ENTRYPOINT service xvfd start && bash
+ENTRYPOINT service xvfd start \
+    && export DISPLAY=:99 \
+    && bash
