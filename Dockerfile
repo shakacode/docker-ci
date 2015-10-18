@@ -9,14 +9,16 @@ RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - \
 
 RUN mkdir -p /linting
 WORKDIR /linting/
+
+# Install xvfd and iceweasel/firefox for browser testing
 RUN apt-get install -y xserver-common libgl1-mesa-glx libxfont1 libxshmfence1
 RUN curl -O http://http.us.debian.org/debian/pool/main/x/xorg-server/xvfb_1.16.4-1_amd64.deb \
     && dpkg -i xvfb_1.16.4-1_amd64.deb \
     && rm xvfb_1.16.4-1_amd64.deb
-RUN echo "deb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main" | tee -a /etc/apt/sources.list \
-    && apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C1289A29 \
-    && apt-get update -qq \
-    && apt-get install -y firefox-mozilla-build
+RUN apt-get install -y iceweasel
+
+COPY ["xvfd", "/etc/init.d/"]
+COPY ["xvfd.conf", "/etc/init/"]
 
 # Setup container for bundle and npm install
 COPY ["package.json", "npm-shrinkwrap.json", "/linting/"]
@@ -26,6 +28,5 @@ RUN gem install bundler \
 RUN npm install
 ENV PATH /linting/node_modules/.bin:$PATH
 
-RUN mkdir -p /app
-WORKDIR /app/
-
+# Start xvfd server at container runtime
+ENTRYPOINT service xvfd start && bash
