@@ -21,13 +21,13 @@ COPY ["xvfd.conf", "/etc/init/"]
 COPY ["package.json", "npm-shrinkwrap.json", "/linting/"]
 COPY ["Gemfile", "Gemfile.lock", "/linting/"]
 RUN gem install bundler \
-    && bundle install --jobs 4
+    && bundle install
 RUN npm install
 ENV PATH /linting/node_modules/.bin:$PATH
 
 # Start xvfd server at container runtime
 ENV DISPLAY :99
 # Need to have a rake :ci task in your rakefile
-ENTRYPOINT /etc/init.d/xvfd start \
+ENTRYPOINT service xvfd start \
     && rake ci
 
